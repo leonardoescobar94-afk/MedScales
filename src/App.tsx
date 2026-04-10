@@ -184,31 +184,31 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 mt-6">
+      <main className="max-w-3xl mx-auto px-4 mt-4 pb-32 space-y-6">
         {activeScales.map((scale) => (
-          <div key={scale.id} className="mb-12 last:mb-0">
+          <div key={scale.id} className="mb-8 last:mb-0">
             {/* Scale Header */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl font-black text-slate-900">{scale.name}</h2>
+            <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm mb-4">
+              <div className="flex items-center justify-between mb-1.5">
+                <h2 className="text-lg font-black text-slate-900 leading-tight">{scale.name}</h2>
                 {isScaleComplete(scale.id) && (
-                  <div className="flex items-center gap-1 text-green-600 bg-green-50 px-3 py-1 rounded-full text-xs font-black">
+                  <div className="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-0.5 rounded-full text-[10px] font-black">
                     <CheckCircle2 className="w-3 h-3" />
                     COMPLETA
                   </div>
                 )}
               </div>
-              <p className="text-slate-500 text-xs flex items-center gap-2 font-medium">
+              <p className="text-slate-500 text-[11px] flex items-center gap-2 font-medium">
                 <Info className="w-3 h-3" />
                 {scale.description}
               </p>
               
               {/* Scale Result Preview */}
-              <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Resultado Actual</span>
                 <div className="text-right">
-                  <div className="text-lg font-black text-blue-600">{getScaleScore(scale.id)} pts</div>
-                  <div className="text-[10px] font-bold text-slate-500 uppercase whitespace-pre-line">
+                  <div className="text-base font-black text-blue-600 leading-none mb-1">{getScaleScore(scale.id)} pts</div>
+                  <div className="text-[10px] font-bold text-slate-500 uppercase whitespace-pre-line leading-tight">
                     {scale.calculateResult(getScaleScore(scale.id), { gender, domainScores: getDomainScores(scale.id) })}
                   </div>
                 </div>
@@ -216,7 +216,7 @@ export default function App() {
             </div>
 
             {/* Questions List Grouped by Domain/Subdomain */}
-            <div className="space-y-8">
+            <div className="space-y-2">
               {(() => {
                 let currentDomain = '';
                 let currentSubDomain = '';
@@ -225,8 +225,8 @@ export default function App() {
                   if (item.genderSpecific && item.genderSpecific !== gender) return null;
 
                   const domainHeader = item.domain && item.domain !== currentDomain ? (
-                    <div key={`domain-${item.domain}`} className="pt-4 first:pt-0">
-                      <h3 className="text-lg font-black text-slate-800 border-l-4 border-blue-600 pl-3 mb-4 uppercase tracking-tight">
+                    <div key={`domain-${item.domain}`} className="pt-2 first:pt-0">
+                      <h3 className="text-base font-black text-slate-800 border-l-4 border-blue-600 pl-3 mb-2 uppercase tracking-tight">
                         {item.domain}
                       </h3>
                     </div>
@@ -234,8 +234,8 @@ export default function App() {
                   if (item.domain) currentDomain = item.domain;
 
                   const subDomainHeader = item.subDomain && item.subDomain !== currentSubDomain ? (
-                    <div key={`subdomain-${item.subDomain}`} className="mb-3">
-                      <span className="text-xs font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded">
+                    <div key={`subdomain-${item.subDomain}`} className="mb-2">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded">
                         {item.subDomain}
                       </span>
                     </div>
@@ -243,31 +243,31 @@ export default function App() {
                   if (item.subDomain) currentSubDomain = item.subDomain;
 
                   return (
-                    <div key={item.id} className="space-y-4">
+                    <div key={item.id} className="space-y-2">
                       {domainHeader}
                       {subDomainHeader}
-                      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:border-slate-300 transition-colors">
-                        <div className="bg-slate-50 px-6 py-2 border-b border-slate-100 flex items-center justify-between">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Item {index + 1}</span>
+                      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:border-slate-300 transition-colors">
+                        <div className="bg-slate-50 px-4 py-1.5 border-b border-slate-100 flex items-center justify-between">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Item {index + 1}</span>
                           {answers[item.id] !== undefined && (
                             <CheckCircle2 className="w-3 h-3 text-green-500" />
                           )}
                         </div>
-                        <div className="p-5">
-                          <h4 className="font-bold text-slate-800 mb-4 leading-snug text-sm sm:text-base">{item.question}</h4>
-                          <div className="grid gap-2">
+                        <div className="p-3 sm:p-4">
+                          <h4 className="font-bold text-slate-800 mb-3 leading-snug text-xs sm:text-sm">{item.question}</h4>
+                          <div className={`grid gap-1.5 ${item.options.length <= 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
                             {item.options.map((option) => (
                               <button
                                 key={option.label}
                                 onClick={() => handleOptionSelect(item.id, option.score)}
-                                className={`text-left px-4 py-3 rounded-xl border transition-all duration-200 flex justify-between items-center group ${
+                                className={`text-left px-3 py-2 rounded-lg border transition-all duration-200 flex justify-between items-center group ${
                                   answers[item.id] === option.score
                                     ? 'bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500 shadow-sm'
                                     : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
                                 }`}
                               >
-                                <span className="text-xs sm:text-sm font-bold">{option.label}</span>
-                                <span className={`text-[10px] font-black px-2 py-1 rounded min-w-[24px] text-center ${
+                                <span className="text-[11px] sm:text-xs font-bold leading-tight">{option.label}</span>
+                                <span className={`text-[9px] font-black px-1.5 py-0.5 rounded min-w-[20px] text-center ml-2 ${
                                   answers[item.id] === option.score ? 'bg-blue-100' : 'bg-slate-100 group-hover:bg-slate-200'
                                 }`}>
                                   {option.score}

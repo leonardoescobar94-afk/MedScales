@@ -73,7 +73,7 @@ export const SCALES: Scale[] = [
       },
       {
         id: 'barthel_aseo',
-        question: 'Aeo personal',
+        question: 'Aseo personal',
         options: [
           { label: 'Dependiente', score: 0 },
           { label: 'Independiente (lavarse la cara, manos, dientes, afeitarse, peinarse)', score: 5 }
