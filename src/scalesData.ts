@@ -10,6 +10,7 @@ export interface ScaleItem {
   genderSpecific?: 'female' | 'male';
   domain?: string;
   subDomain?: string;
+  optional?: boolean;
 }
 
 export interface Scale {
@@ -34,6 +35,14 @@ const WEEFIM_OPTIONS: ScaleOption[] = [
   { label: '3 - Asistencia moderada (50%+)', score: 3 },
   { label: '2 - Asistencia máxima (25-49%)', score: 2 },
   { label: '1 - Asistencia Total (0-24%)', score: 1 }
+];
+
+const PEDSQL_OPTIONS: ScaleOption[] = [
+  { label: 'Nunca (0)', score: 100 },
+  { label: 'Casi nunca (1)', score: 75 },
+  { label: 'A veces (2)', score: 50 },
+  { label: 'A menudo (3)', score: 25 },
+  { label: 'Casi siempre (4)', score: 0 }
 ];
 
 export const SCALES: Scale[] = [
@@ -441,6 +450,185 @@ export const SCALES: Scale[] = [
       if (ds['Motor'] !== undefined) result += `- Subtotal Motor: ${ds['Motor']}/91\n`;
       if (ds['Cognitivo'] !== undefined) result += `- Subtotal Cognitivo: ${ds['Cognitivo']}/35\n`;
       return result.trim();
+    }
+  },
+  {
+    id: 'pedsql',
+    name: 'PedsQL (Pediatric Quality of Life Inventory)',
+    category: 'pediatricos',
+    description: 'Inventario de Calidad de Vida Pediátrica (2-18 años). Puntuación transformada (0-100).',
+    items: [
+      // FUNCIONAMIENTO FÍSICO
+      { id: 'pedsql_fis_1', domain: 'Funcionamiento Físico', question: 'Caminar más de una cuadra', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_fis_2', domain: 'Funcionamiento Físico', question: 'Correr', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_fis_3', domain: 'Funcionamiento Físico', question: 'Participar en actividades deportivas o ejercicio', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_fis_4', domain: 'Funcionamiento Físico', question: 'Levantar algo pesado', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_fis_5', domain: 'Funcionamiento Físico', question: 'Bañarse o ducharse solo/a', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_fis_6', domain: 'Funcionamiento Físico', question: 'Hacer tareas o labores en la casa', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_fis_7', domain: 'Funcionamiento Físico', question: 'Tener dolores o molestias', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_fis_8', domain: 'Funcionamiento Físico', question: 'Tener poca energía (sentirse cansado/a)', options: PEDSQL_OPTIONS },
+      
+      // FUNCIONAMIENTO EMOCIONAL
+      { id: 'pedsql_emo_1', domain: 'Funcionamiento Emocional', question: 'Sentirse con miedo o asustado/a', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_emo_2', domain: 'Funcionamiento Emocional', question: 'Sentirse triste o decaído/a', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_emo_3', domain: 'Funcionamiento Emocional', question: 'Sentirse enojado/a', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_emo_4', domain: 'Funcionamiento Emocional', question: 'Tener problemas para dormir', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_emo_5', domain: 'Funcionamiento Emocional', question: 'Preocuparse por lo que le va a pasar', options: PEDSQL_OPTIONS },
+      
+      // FUNCIONAMIENTO SOCIAL
+      { id: 'pedsql_soc_1', domain: 'Funcionamiento Social', question: 'Llevarse bien con otros niños/as', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_soc_2', domain: 'Funcionamiento Social', question: 'Otros niños/as no quieren ser sus amigos/as', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_soc_3', domain: 'Funcionamiento Social', question: 'Otros niños/as se burlan de él/ella', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_soc_4', domain: 'Funcionamiento Social', question: 'No poder hacer cosas que otros niños/as de su edad pueden hacer', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_soc_5', domain: 'Funcionamiento Social', question: 'Seguir el ritmo cuando juega con otros niños/as', options: PEDSQL_OPTIONS },
+      
+      // FUNCIONAMIENTO ESCOLAR
+      { id: 'pedsql_esc_1', domain: 'Funcionamiento Escolar', question: 'Prestar atención en clase', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_esc_2', domain: 'Funcionamiento Escolar', question: 'Olvidar cosas', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_esc_3', domain: 'Funcionamiento Escolar', question: 'Estar al día con las tareas escolares', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_esc_4', domain: 'Funcionamiento Escolar', question: 'Faltar a la escuela por no sentirse bien', options: PEDSQL_OPTIONS },
+      { id: 'pedsql_esc_5', domain: 'Funcionamiento Escolar', question: 'Faltar a la escuela para ir al médico o al hospital', options: PEDSQL_OPTIONS },
+    ],
+    calculateResult: (score) => {
+      const mean = (score / 23).toFixed(2);
+      let interpretation = `Puntaje Medio: ${mean}/100\n`;
+      interpretation += `(Nota: Un puntaje más alto indica mejor calidad de vida)`;
+      return interpretation;
+    }
+  },
+  {
+    id: 'sppb_vivifrail',
+    name: 'SPPB & Vivifrail',
+    category: 'funcionales',
+    description: 'Batería de desempeño físico y prescripción de ejercicio Vivifrail.',
+    items: [
+      // SPPB - EQUILIBRIO
+      { 
+        id: 'sppb_bal_1', 
+        domain: 'SPPB: Pruebas de Equilibrio', 
+        question: 'A. Pies juntos (10 segundos)', 
+        options: [
+          { label: 'Mantuvo 10s', score: 1 },
+          { label: 'Menos de 10s o no intenta', score: 0 }
+        ]
+      },
+      { 
+        id: 'sppb_bal_2', 
+        domain: 'SPPB: Pruebas de Equilibrio', 
+        question: 'B. Posición semi-tándem (10 segundos)', 
+        options: [
+          { label: 'Mantuvo 10s', score: 1 },
+          { label: 'Menos de 10s o no intenta', score: 0 }
+        ]
+      },
+      { 
+        id: 'sppb_bal_3', 
+        domain: 'SPPB: Pruebas de Equilibrio', 
+        question: 'C. Posición tándem (10 segundos)', 
+        options: [
+          { label: '10 segundos', score: 2 },
+          { label: '3 a 9.99 segundos', score: 1 },
+          { label: 'Menos de 3s o no intenta', score: 0 }
+        ]
+      },
+      // SPPB - VELOCIDAD DE MARCHA
+      { 
+        id: 'sppb_marcha', 
+        domain: 'SPPB: Velocidad de Marcha (4m)', 
+        question: 'Tiempo en recorrer 4 metros (mejor de 2 intentos)', 
+        options: [
+          { label: '< 4.82 segundos', score: 4 },
+          { label: '4.82 - 6.20 segundos', score: 3 },
+          { label: '6.21 - 8.70 segundos', score: 2 },
+          { label: '> 8.70 segundos', score: 1 },
+          { label: 'Incapaz', score: 0 }
+        ]
+      },
+      // SPPB - LEVANTARSE DE LA SILLA
+      { 
+        id: 'sppb_silla', 
+        domain: 'SPPB: Levantarse de la silla', 
+        question: 'Tiempo en levantarse 5 veces de la silla', 
+        options: [
+          { label: '< 11.19 segundos', score: 4 },
+          { label: '11.20 - 13.69 segundos', score: 3 },
+          { label: '13.70 - 16.69 segundos', score: 2 },
+          { label: '16.70 - 59 segundos', score: 1 },
+          { label: 'Más de 60s o incapaz', score: 0 }
+        ]
+      },
+      // VIVIFRAIL - RIESGO DE CAÍDAS
+      { 
+        id: 'vivifrail_caidas', 
+        domain: 'Vivifrail: Riesgo de Caídas', 
+        question: '¿2 o más caídas en el último año o 1 caída con atención médica?', 
+        optional: true,
+        options: [
+          { label: 'Sí', score: 1 },
+          { label: 'No', score: 0 }
+        ]
+      },
+      { 
+        id: 'vivifrail_tug', 
+        domain: 'Vivifrail: Riesgo de Caídas', 
+        question: 'Timed Up and Go (TUG) > 20 segundos', 
+        optional: true,
+        options: [
+          { label: 'Sí', score: 1 },
+          { label: 'No', score: 0 }
+        ]
+      },
+      { 
+        id: 'vivifrail_marcha6m', 
+        domain: 'Vivifrail: Riesgo de Caídas', 
+        question: 'Velocidad de Marcha (6m) > 7.5 segundos', 
+        optional: true,
+        options: [
+          { label: 'Sí', score: 1 },
+          { label: 'No', score: 0 }
+        ]
+      },
+      { 
+        id: 'vivifrail_cognitivo', 
+        domain: 'Vivifrail: Riesgo de Caídas', 
+        question: '¿Diagnóstico de deterioro cognitivo moderado?', 
+        optional: true,
+        options: [
+          { label: 'Sí', score: 1 },
+          { label: 'No', score: 0 }
+        ]
+      }
+    ],
+    calculateResult: (score, context) => {
+      const ds = context?.domainScores || {};
+      const sppbScore = (ds['SPPB: Pruebas de Equilibrio'] || 0) + 
+                        (ds['SPPB: Velocidad de Marcha (4m)'] || 0) + 
+                        (ds['SPPB: Levantarse de la silla'] || 0);
+      
+      const hasRiskOfFalls = (ds['Vivifrail: Riesgo de Caídas'] || 0) > 0;
+      
+      let passport = '';
+      let link = '';
+      
+      if (sppbScore <= 3) {
+        passport = 'Pasaporte A (Discapacidad)';
+        link = 'https://tinyurl.com/pasaporteA';
+      } else if (sppbScore <= 6) {
+        passport = hasRiskOfFalls ? 'Pasaporte B-plus (Fragilidad + Riesgo)' : 'Pasaporte B (Fragilidad)';
+        link = hasRiskOfFalls ? 'https://tinyurl.com/pasaporteBplus' : 'https://tinyurl.com/pasaporteB';
+      } else if (sppbScore <= 9) {
+        passport = hasRiskOfFalls ? 'Pasaporte C-plus (Pre-fragilidad + Riesgo)' : 'Pasaporte C (Pre-fragilidad)';
+        link = hasRiskOfFalls ? 'https://tinyurl.com/pasaporteCplus' : 'https://tinyurl.com/pasaporteC';
+      } else {
+        passport = 'Pasaporte D (Robusto)';
+        link = 'https://tinyurl.com/pasaporteD';
+      }
+
+      let result = `SPPB Total: ${sppbScore}/12 pts\n`;
+      result += `VIVIFRAIL: ${passport}\n`;
+      result += `En este enlace descargue el programa de ejercicios: ${link}`;
+      
+      return result;
     }
   }
 ];

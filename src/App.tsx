@@ -57,6 +57,7 @@ export default function App() {
     if (!scale) return false;
     return scale.items.every(item => {
       if (item.genderSpecific && item.genderSpecific !== gender) return true;
+      if (item.optional) return true;
       return answers[item.id] !== undefined;
     });
   };
@@ -90,8 +91,10 @@ export default function App() {
         }
 
         const ans = answers[item.id];
+        if (item.optional && ans === undefined) return;
+        
         const option = item.options.find(o => o.score === ans);
-        summary += `  - ${item.question}: ${option?.label || 'N/A'} (${ans} pts)\n`;
+        summary += `  - ${item.question}: ${option?.label || 'N/A'} (${ans ?? 0} pts)\n`;
       });
       
       summary += `\nPUNTUACIÓN TOTAL: ${score}\n`;
