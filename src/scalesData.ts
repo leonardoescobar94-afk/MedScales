@@ -630,5 +630,36 @@ export const SCALES: Scale[] = [
       
       return result;
     }
+  },
+  {
+    id: 'fac',
+    name: 'Escala FAC (Functional Ambulation Categories)',
+    category: 'funcionales',
+    description: 'Categorías de Marcha Funcional para evaluar la independencia en la deambulación.',
+    items: [
+      {
+        id: 'fac_nivel',
+        question: 'Seleccione el nivel de marcha funcional:',
+        options: [
+          { label: 'Nivel 0: Marcha no funcional. El paciente es incapaz de caminar o requiere la ayuda de dos o más personas.', score: 0 },
+          { label: 'Nivel 1: Marcha dependiente (apoyo físico máximo). El paciente necesita apoyo firme y continuo de una persona para mantener el equilibrio o el peso.', score: 1 },
+          { label: 'Nivel 2: Marcha dependiente (apoyo físico intermitente). Requiere ayuda ligera de una persona para equilibrarse o auxiliarse intermitentemente.', score: 2 },
+          { label: 'Nivel 3: Marcha dependiente (supervisión). El paciente camina solo, pero requiere supervisión constante (verbal o física) de una persona para seguridad.', score: 3 },
+          { label: 'Nivel 4: Marcha independiente en nivel. Camina solo en terreno plano, pero necesita ayuda en escaleras o superficies irregulares.', score: 4 },
+          { label: 'Nivel 5: Marcha independiente total. El paciente camina de forma autónoma en cualquier tipo de terreno.', score: 5 }
+        ]
+      }
+    ],
+    calculateResult: (score) => {
+      const interpretations = [
+        'Nivel 0: Marcha no funcional',
+        'Nivel 1: Marcha dependiente (apoyo físico máximo)',
+        'Nivel 2: Marcha dependiente (apoyo físico intermitente)',
+        'Nivel 3: Marcha dependiente (supervisión)',
+        'Nivel 4: Marcha independiente en nivel',
+        'Nivel 5: Marcha independiente total'
+      ];
+      return interpretations[score] || 'No evaluado';
+    }
   }
 ];
