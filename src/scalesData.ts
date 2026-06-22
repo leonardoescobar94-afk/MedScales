@@ -661,5 +661,239 @@ export const SCALES: Scale[] = [
       ];
       return interpretations[score] || 'No evaluado';
     }
+  },
+  {
+    id: 'hoehn_yahr',
+    name: 'Hoehn y Yahr - Parkinson',
+    category: 'funcionales',
+    description: 'Clasificación de la severidad de los síntomas en la Enfermedad de Parkinson.',
+    items: [
+      {
+        id: 'hoehn_yahr_nivel',
+        question: 'Seleccione el estadio actual del paciente:',
+        options: [
+          { label: 'Estadio 0: Asintomático', score: 0 },
+          { label: 'Estadio 1: Afectación unilateral únicamente (Normal: generalmente con discapacidad funcional mínima o nula / Modificada: afectación unilateral únicamente)', score: 1 },
+          { label: 'Estadio 1.5 (Modificada): Afectación unilateral y axial', score: 1.5 },
+          { label: 'Estadio 2: Afectación bilateral o de la línea media sin alteración del equilibrio (Normal: sin alteración del equilibrio / Modificada: afectación bilateral sin alteración del equilibrio)', score: 2 },
+          { label: 'Estadio 2.5 (Modificada): Enfermedad bilateral leve con recuperación en la prueba de tracción', score: 2.5 },
+          { label: 'Estadio 3: Enfermedad bilateral de leve a moderada con independencia física (Normal: reflejos posturales alterados / Modificada: cierta inestabilidad postural)', score: 3 },
+          { label: 'Estadio 4: Aún puede caminar o mantenerse de pie sin ayuda (Normal: enfermedad gravemente incapacitante / Modificada: discapacidad grave)', score: 4 },
+          { label: 'Estadio 5: Confinamiento/Postrado a menos que reciba ayuda (Normal: confinamiento en cama o silla de ruedas / Modificada: confinado a silla de ruedas o postrado en cama)', score: 5 }
+        ]
+      }
+    ],
+    calculateResult: (score) => {
+      const isModified = score === 1.5 || score === 2.5;
+      const title = isModified ? 'Escala de Hoehn y Yahr modificada' : 'Escala de Hoehn y Yahr';
+      let desc = '';
+      
+      switch (score) {
+        case 0:
+          desc = 'Estadio 0 - Asintomático';
+          break;
+        case 1:
+          desc = 'Estadio 1 - Afectación unilateral únicamente (Asociado a discapacidad funcional mínima o nula)';
+          break;
+        case 1.5:
+          desc = 'Estadio 1.5 - Afectación unilateral y axial';
+          break;
+        case 2:
+          desc = 'Estadio 2 - Afectación bilateral o de la línea media sin alteración del equilibrio';
+          break;
+        case 2.5:
+          desc = 'Estadio 2.5 - Enfermedad bilateral leve con recuperación en la prueba de tracción';
+          break;
+        case 3:
+          desc = 'Estadio 3 - Enfermedad bilateral de leve a moderada; puede haber inestabilidad o reflejos posturales alterados, pero conserva independencia física';
+          break;
+        case 4:
+          desc = 'Estadio 4 - Enfermedad gravemente incapacitante o discapacidad grave; aún puede caminar o mantenerse de pie sin ayuda';
+          break;
+        case 5:
+          desc = 'Estadio 5 - Confinamiento en cama o silla de ruedas o postrado a menos que reciba ayuda';
+          break;
+        default:
+          desc = `Estadio ${score}`;
+      }
+      return `${title}: ${desc}`;
+    }
+  },
+  {
+    id: 'mds_updrs_ii',
+    name: 'MDS-UPDRS Part II - Parkinson',
+    category: 'funcionales',
+    description: 'Escala para seguimiento funcional específico en Parkinson, evalúa el impacto motor de la enfermedad de Parkinson sobre experiencias de la vida diaria.',
+    items: [
+      {
+        id: 'updrs_ii_1',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.1. HABLAR: Durante los últimos siete días, ¿ha tenido problemas para hablar?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Hablo bajo, pronuncio mal o irregular, pero no tanto como para que otras personas me pidan que repita)', score: 1 },
+          { label: '2: Leve (Mi forma de hablar hace que otras personas me pidan a veces que repita, pero no todos los días)', score: 2 },
+          { label: '3: Moderado (Hablo con tantos problemas que la gente me pide todos los días que repita, aunque la mayor parte se entiende)', score: 3 },
+          { label: '4: Grave (No puede entenderse la mayor parte o nada de lo que hablo)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_2',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.2. SALIVA Y BABEO: Durante los últimos siete días, ¿ha tenido habitualmente demasiada saliva cuando está despierto o durmiendo?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Tengo demasiada saliva, pero no babeo)', score: 1 },
+          { label: '2: Leve (Tengo cierto babeo mientras duermo, pero no cuando estoy despierto)', score: 2 },
+          { label: '3: Moderado (Tengo cierto babeo cuando estoy despierto, pero normalmente no necesito pañuelos o babero)', score: 3 },
+          { label: '4: Grave (Tengo tanto babeo que necesito usar habitualmente pañuelos o un babero para proteger la ropa)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_3',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.3. MASTICACIÓN Y DEGLUCIÓN: Durante los últimos siete días, ¿ha tenido habitualmente problemas para tragar las pastillas o comer?',
+        options: [
+          { label: '0: Normal (Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Soy consciente de mi lentitud al masticar o de tragar con esfuerzo, pero no me atraganto)', score: 1 },
+          { label: '2: Leve (Necesito cortar las pastillas o comida especial porque tengo problemas, pero no me he atragantado esta semana)', score: 2 },
+          { label: '3: Moderado (Me he atragantado al menos una vez durante los últimos siete días)', score: 3 },
+          { label: '4: Grave (Debido a mis problemas para masticar y tragar, necesito alimentación por sonda)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_4',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.4. ACTIVIDADES PARA COMER: Durante los últimos siete días, ¿ha tenido habitualmente problemas para manipular los alimentos y usar los cubiertos?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Soy lento, pero no necesito ayuda para comer y no se me caen los alimentos mientras como)', score: 1 },
+          { label: '2: Leve (Soy lento para comer y ocasionalmente se me cae la comida. Puedo necesitar ayuda para algunas tareas)', score: 2 },
+          { label: '3: Moderado (Necesito ayuda en muchas de las actividades para comer, aunque puedo hacer otras solo)', score: 3 },
+          { label: '4: Grave (Necesito ayuda en todo o casi todo para comer)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_5',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.5. VESTIRSE: Durante los últimos siete días, ¿ha tenido habitualmente problemas para vestirse (botones, cremalleras, ponerse/quitarse ropa)?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Soy lento, pero no necesito ayuda)', score: 1 },
+          { label: '2: Leve (Soy lento y necesito ayuda para algunas cosas al vestirme, como botones o pulseras)', score: 2 },
+          { label: '3: Moderado (Necesito ayuda para muchas cosas al vestirme)', score: 3 },
+          { label: '4: Grave (Necesito ayuda en todo o casi todo para vestirme)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_6',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.6. HIGIENE: Durante los últimos siete días, ¿ha sido habitualmente lento o ha necesitado ayuda al lavarse, bañarse, afeitarse o cepillarse?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Soy lento, pero no necesito ayuda)', score: 1 },
+          { label: '2: Leve (Necesito que alguien me ayude con algunas actividades de higiene)', score: 2 },
+          { label: '3: Moderado (Necesito ayuda para muchas actividades de higiene)', score: 3 },
+          { label: '4: Grave (Necesito ayuda en todo o casi todo para mi higiene)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_7',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.7. ESCRITURA: Durante los últimos siete días, ¿han tenido otras personas problemas para leer su escritura?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Mi escritura es lenta, torpe o irregular, pero todas las palabras se leen claramente)', score: 1 },
+          { label: '2: Leve (Algunas palabras no son claras y se leen con dificultad)', score: 2 },
+          { label: '3: Moderado (Muchas palabras no son claras y se leen con dificultad)', score: 3 },
+          { label: '4: Grave (No se pueden leer la mayoría de las palabras o ninguna)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_8',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.8. HOBBIES Y OTRAS ACTIVIDADES: Durante los últimos siete días, ¿ha tenido habitualmente problemas para practicar sus hobbies u otras actividades?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Soy un poco lento, pero hago esas actividades fácilmente)', score: 1 },
+          { label: '2: Leve (Tengo algunas dificultades para hacer esas actividades)', score: 2 },
+          { label: '3: Moderado (Tengo grandes problemas para esas actividades, pero todavía hago la mayoría)', score: 3 },
+          { label: '4: Grave (Soy incapaz de hacer todas o casi todas esas actividades)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_9',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.9. DARSE LA VUELTA EN LA CAMA: Durante los últimos siete días, ¿ha tenido habitualmente problemas para darse la vuelta en la cama?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Tengo algún problema, pero no necesito ayuda)', score: 1 },
+          { label: '2: Leve (Tengo muchos problemas para darme la vuelta y ocasionalmente necesito que alguien me ayude)', score: 2 },
+          { label: '3: Moderado (Para darme la vuelta necesito, con frecuencia, que alguien me ayude)', score: 3 },
+          { label: '4: Grave (Soy incapaz de darme la vuelta sin ayuda de alguien)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_10',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.10. TEMBLOR: Durante los últimos siete días, ¿ha tenido temblor?',
+        options: [
+          { label: '0: Normal (No, en absoluto / No tengo temblor)', score: 0 },
+          { label: '1: Mínimo (Tengo temblor, pero no me causa problemas en ninguna actividad)', score: 1 },
+          { label: '2: Leve (El temblor me causa problemas solo en algunas actividades)', score: 2 },
+          { label: '3: Moderado (El temblor me causa problemas en muchas de mis actividades diarias)', score: 3 },
+          { label: '4: Grave (El temblor me causa problemas en la mayoría o todas mis actividades)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_11',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.11. LEVANTARSE DE LA CAMA, DEL ASIENTO DE UN COCHE O DE UN SILLÓN: Durante los últimos siete días, ¿ha tenido problemas para levantarse?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Estoy lento o torpe, pero normalmente puedo hacerlo al primer intento)', score: 1 },
+          { label: '2: Leve (Necesito más de un intento para levantarme o necesito ayuda ocasionalmente)', score: 2 },
+          { label: '3: Moderado (Algunas veces necesito ayuda para levantarme, pero la mayor parte puedo hacerlo solo)', score: 3 },
+          { label: '4: Grave (Necesito ayuda siempre o casi siempre)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_12',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.12. CAMINAR Y EQUILIBRIO: Durante los últimos siete días, ¿ha tenido problemas con el equilibrio y para caminar?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Soy un poco lento o puede que arrastre una pierna. Nunca utilizo ayuda para caminar)', score: 1 },
+          { label: '2: Leve (Utilizo ocasionalmente ayuda para caminar (bastón, andador), pero no necesito ayuda de otra persona)', score: 2 },
+          { label: '3: Moderado (Normalmente uso una ayuda para caminar de forma segura sin caerme. No necesito apoyarme en otra persona)', score: 3 },
+          { label: '4: Grave (Normalmente necesito apoyarme en otra persona para andar de forma segura sin caerme)', score: 4 }
+        ]
+      },
+      {
+        id: 'updrs_ii_13',
+        domain: 'MDS-UPDRS Parte II',
+        question: '2.13. CONGELACIONES O BLOQUEOS (AL CAMINAR): Durante los últimos siete días, ¿se queda parado o bloqueado de repente al caminar?',
+        options: [
+          { label: '0: Normal (No, en absoluto / Sin problemas)', score: 0 },
+          { label: '1: Mínimo (Me bloqueo brevemente, pero puedo volver a andar con facilidad. No necesito ayuda ni dispositivo)', score: 1 },
+          { label: '2: Leve (Me bloqueo y tengo problemas para volver a andar, pero no necesito ayuda ni dispositivo)', score: 2 },
+          { label: '3: Moderado (Cuando me bloqueo tengo muchos problemas para volver a andar y a veces necesito usar ayuda o que me ayuden)', score: 3 },
+          { label: '4: Grave (Debido a los bloqueos necesito usar, la mayor parte o todo el tiempo, ayuda para caminar o que me ayuden)', score: 4 }
+        ]
+      }
+    ],
+    calculateResult: (score) => {
+      let interpretation = '';
+      if (score <= 2) {
+        interpretation = 'Sin discapacidad funcional relevante';
+      } else if (score <= 16) {
+        interpretation = 'Discapacidad leve';
+      } else if (score <= 31) {
+        interpretation = 'Discapacidad moderada';
+      } else {
+        interpretation = 'Discapacidad severa';
+      }
+      return `Puntaje Total MDS-UPDRS II: ${score}/52 \nInterpretación: ${interpretation}`;
+    }
   }
 ];

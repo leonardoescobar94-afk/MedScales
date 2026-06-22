@@ -20,6 +20,8 @@ export default function App() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [gender, setGender] = useState<Gender>('female');
   const [copySuccess, setCopySuccess] = useState(false);
+  const [basalScore, setBasalScore] = useState<string>('');
+  const [segScore, setSegScore] = useState<string>('');
 
   const activeScales = useMemo(() => {
     if (selectedScaleId === 'all_funcionales') return SCALES.filter(s => s.category === 'funcionales');
@@ -94,11 +96,59 @@ export default function App() {
         if (item.optional && ans === undefined) return;
         
         const option = item.options.find(o => o.score === ans);
-        summary += `  - ${item.question}: ${option?.label || 'N/A'} (${ans ?? 0} pts)\n`;
+        const optLabel = option?.label || 'N/A';
+        
+        if (scale.id === 'mds_updrs_ii') {
+          let qClean = item.question;
+          const qParts = qClean.split(':');
+          if (qParts.length > 0) {
+            const prefix = qParts[0].trim();
+            qClean = prefix.replace(/^(\d+\.\d+)\./, '$1');
+          }
+
+          let optClean = optLabel;
+          const optParts = optClean.split(':');
+          if (optParts.length > 1) {
+            optClean = optParts[1].trim();
+          }
+          const parenIndex = optClean.indexOf('(');
+          if (parenIndex !== -1) {
+            optClean = optClean.substring(0, parenIndex).trim();
+          }
+
+          summary += `  -${qClean}: ${optClean} (${ans ?? 0}pts)\n`;
+        } else {
+          summary += `  - ${item.question}: ${optLabel} (${ans ?? 0} pts)\n`;
+        }
       });
       
       summary += `\nPUNTUACIÓN TOTAL: ${score}\n`;
       summary += `INTERPRETACIÓN: ${scale.calculateResult(score, { gender, domainScores })}\n\n`;
+
+      if (scale.id === 'mds_updrs_ii') {
+        const b = parseFloat(basalScore);
+        const s = parseFloat(segScore);
+        if (!isNaN(b) && !isNaN(s) && b > 0) {
+          const changePercentVal = ((s - b) / b) * 100;
+          const changeAbs = s - b;
+          const changeAbsVal = Math.abs(changeAbs);
+          
+          let dirText = changeAbs > 0 ? 'Empeoramiento' : changeAbs < 0 ? 'Mejoría' : 'Sin cambios';
+          let relevance = 'Cambio sin relevancia clínica clara (<2.5 puntos)';
+          if (changeAbsVal >= 8.2) {
+            relevance = 'Cambio que supera error de medición individual (≥8.2 puntos)';
+          } else if (changeAbsVal >= 2.5) {
+            relevance = 'Cambio clínicamente relevante probable (≥2.5 a 3 puntos)';
+          }
+          
+          summary += `--- SEGUIMIENTO Y COMPARACIÓN EVOLUTIVA ---\n`;
+          summary += `  - Puntaje Basal: ${b} pts\n`;
+          summary += `  - Puntaje Seguimiento: ${s} pts\n`;
+          summary += `  - Porcentaje de Cambio: ${changePercentVal >= 0 ? '+' : ''}${changePercentVal.toFixed(1)}%\n`;
+          summary += `  - Interpretación: ${dirText}\n`;
+          summary += `  - Relevancia Clínica: ${relevance}\n\n`;
+        }
+      }
     });
 
     return summary.trim();
@@ -281,6 +331,82 @@ export default function App() {
                   );
                 });
               })()}
+
+              {scale.id === 'mds_updrs_ii' && (
+                <div className="mt-4 bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 shadow-inner">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-500">Módulo de Seguimiento (Opcional)</h3>
+                    <span className="text-[10px] text-slate-400 bg-white px-2 py-0.5 rounded border border-slate-200 font-bold">Parkinson</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-1">Puntaje Basal</label>
+                      <input 
+                        type="number"
+                        min="0"
+                        max="52"
+                        placeholder="Ej. 10"
+                        value={basalScore}
+                        onChange={(e) => setBasalScore(e.target.value)}
+                        className="w-full bg-white rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-1">Puntaje Seguimiento</label>
+                      <input 
+                        type="number"
+                        min="0"
+                        max="52"
+                        placeholder="Ej. 15"
+                        value={segScore}
+                        onChange={(e) => setSegScore(e.target.value)}
+                        className="w-full bg-white rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                  {basalScore !== '' && segScore !== '' && (() => {
+                    const b = parseFloat(basalScore);
+                    const s = parseFloat(segScore);
+                    if (!isNaN(b) && !isNaN(s) && b > 0) {
+                      const changePercent = ((s - b) / b) * 100;
+                      const changeAbs = s - b;
+                      const changeAbsVal = Math.abs(changeAbs);
+                      
+                      const isBetter = changeAbs < 0;
+                      const isWorse = changeAbs > 0;
+                      
+                      let relevance = 'Cambio sin relevancia clínica clara (<2.5 puntos)';
+                      if (changeAbsVal >= 8.2) {
+                        relevance = 'Cambio que supera error de medición individual (≥8.2 puntos)';
+                      } else if (changeAbsVal >= 2.5) {
+                        relevance = 'Cambio clínicamente relevante probable (≥2.5 a 3 puntos)';
+                      }
+                      
+                      return (
+                        <div className="bg-white rounded-lg p-3 border border-slate-200 text-[11px] space-y-1 shadow-sm">
+                          <div className="flex justify-between font-bold">
+                            <span className="text-slate-500 text-xs">Porcentaje de Cambio:</span>
+                            <span className={`text-xs ${isBetter ? 'text-green-600 font-extrabold' : isWorse ? 'text-red-600 font-extrabold' : 'text-slate-600 font-extrabold'}`}>
+                              {changePercent >= 0 ? '+' : ''}{changePercent.toFixed(1)}% ({changeAbs >= 0 ? '+' : ''}{changeAbs.toFixed(1)} pts)
+                            </span>
+                          </div>
+                          <div className="flex justify-between font-bold">
+                            <span className="text-slate-500 text-xs">Interpretación del Cambio:</span>
+                            <span className={`text-xs ${isBetter ? 'text-green-600 font-extrabold' : isWorse ? 'text-red-600 font-extrabold' : 'text-slate-600 font-extrabold'}`}>
+                              {isBetter ? 'Mejoría' : isWorse ? 'Empeoramiento' : 'Estable'}
+                            </span>
+                          </div>
+                          <div className="pt-2 border-t border-slate-100 flex flex-col font-medium text-slate-700">
+                            <span className="font-extrabold text-[9px] uppercase tracking-wider text-slate-400 mb-0.5">Análisis Clínico</span>
+                            <span className="text-xs text-slate-800 font-semibold">• {relevance}</span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
+              )}
             </div>
           </div>
         ))}
